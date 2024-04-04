@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login with Blockchain</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+}
+
+.login-container {
+  max-width: 400px;
+  margin: 100px auto;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+</style>
+</head>
+<body>
+<div class="login-container">
+  <h2>Login</h2>
+  <form id="loginForm">
+    <div class="form-group">
+      <label for="username">Username:</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    <button type="submit">Login</button>
+  </form>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+// Complex Blockchain Implementation
+
+class Block {
+  constructor(index, timestamp, data, previousHash = '') {
+    this.index = index;
+    this.timestamp = timestamp;
+    this.data = data;
+    this.previousHash = previousHash;
+    this.hash = this.calculateHash();
+  }
+
+  calculateHash() {
+    return CryptoJS.SHA256(this.index + this.timestamp + JSON.stringify(this.data) + this.previousHash).toString();
+  }
+}
+
+class Blockchain {
+  constructor() {
+    this.chain = [this.createGenesisBlock()];
+  }
+
+  createGenesisBlock() {
+    return new Block(0, new Date().toISOString(), "Genesis Block", "0");
+  }
+
+  getLatestBlock() {
+    return this.chain[this.chain.length - 1];
+  }
+
+  addBlock(newBlock) {
+    newBlock.previousHash = this.getLatestBlock().hash;
+    newBlock.hash = newBlock.calculateHash();
+    this.chain.push(newBlock);
+  }
+
+  isValid() {
+    for (let i = 1; i < this.chain.length; i++) {
+      const currentBlock = this.chain[i];
+      const previousBlock = this.chain[i - 1];
+
+      if (currentBlock.hash !== currentBlock.calculateHash() || currentBlock.previousHash !== previousBlock.hash) {
+        return false;
+      }
+    }
+    return true;
+  }
+}
+
+let myBlockchain = new Blockchain();
+for (let i = 1; i <= 100; i++) {
+  myBlockchain.addBlock(new Block(i, new Date().toISOString(), { username: 'user' + i, password: 'password' + i }));
+}
+
+// Complex Login Logic
+
+const users = [
+  { username: 'user1', password: 'password1' },
+  { username: 'user2', password: 'password2' },
+  // Add more users as needed
+];
+
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
+  
+  // Validate the user against the hardcoded list of credentials
+  const user = users.find(user => user.username === username && user.password === password);
+  
+  if (user) {
+    console.log("Login successful");
+  } else {
+    console.log("Invalid username or password");
+  }
+});
+</script>
+</body>
+</html>
